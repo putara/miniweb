@@ -1,0 +1,84 @@
+INTDIR = obj
+OUTDIR = bin
+TARGET = miniweb
+
+TARGET_EXE = $(OUTDIR)\$(TARGET).exe
+TARGET_MAP = $(OUTDIR)\$(TARGET).map
+TARGET_PDB = $(OUTDIR)\$(TARGET).pdb
+TARGET_OBJS = \
+ "$(INTDIR)\httppil.obj"\
+ "$(INTDIR)\http.obj"\
+ "$(INTDIR)\httpxml.obj"\
+ "$(INTDIR)\httphandler.obj"\
+ "$(INTDIR)\httppost.obj"\
+ "$(INTDIR)\httpauth.obj"\
+ "$(INTDIR)\miniweb.obj"
+
+CC = cl.exe
+LD = link.exe
+RC = rc.exe
+
+!if "$(AMD64)" == "1"
+TARGET_ARCH = x64
+!else
+TARGET_ARCH = x86
+!endif
+
+CFLAGS = /nologo /c /GF /GL /GR- /GS /Gy /MD /O1ib2 /W4 /wd4127 /Zi /fp:fast /Fo"$(INTDIR)/" /Fd"$(INTDIR)/"
+LDFLAGS = /nologo /time /dynamicbase:no /ltcg /machine:$(TARGET_ARCH) /map:"$(TARGET_MAP)" /nxcompat /opt:icf /opt:ref /release /debug /PDBALTPATH:"%_PDB%"
+RFLAGS = /d "NDEBUG" /l 0
+
+CDEFS = /D "NDEBUG" /D "_WINDOWS" /D "WIN32"
+LDLIBS = kernel32.lib ws2_32.lib shell32.lib iphlpapi.lib
+
+!if defined(DEBUG)
+CDEFS = $(CDEFS) /D "HTTP_DEBUG"
+!endif
+
+all: "$(INTDIR)" "$(OUTDIR)" "$(TARGET_EXE)"
+
+clean: cleanobj
+ -@erase "$(TARGET_EXE)" 2>NUL
+ -@erase "$(TARGET_MAP)" 2>NUL
+ -@rmdir "$(INTDIR)" 2>NUL
+
+cleanobj: cleanpdb cleanobjonly
+
+cleanpdb:
+ -@erase "$(TARGET_PDB)" 2>NUL
+
+cleanobjonly:
+ -@erase "$(INTDIR)\*.cod" 2>NUL
+ -@erase $(TARGET_OBJS) 2>NUL
+ -@erase "$(INTDIR)\vc??.pdb" 2>NUL
+ -@erase "$(INTDIR)\vc??.idb" 2>NUL
+
+"$(INTDIR)":
+ @if not exist "$(INTDIR)" mkdir "$(INTDIR)"
+
+"$(OUTDIR)":
+ @if not exist "$(OUTDIR)" mkdir "$(OUTDIR)"
+
+"$(TARGET_EXE)" : $(TARGET_OBJS)
+ $(LD) /out:$@ $(LDFLAGS) $(LDLIBS) $(TARGET_OBJS)
+
+.SUFFIXES: .c .cpp .obj .rc .res
+
+.c{$(INTDIR)}.obj::
+ $(CC) $(CFLAGS) $(CDEFS) $<
+
+.cpp{$(INTDIR)}.obj::
+ $(CC) $(CFLAGS) $(CDEFS) $<
+
+.rc{$(INTDIR)}.res:
+ $(RC) $(RFLAGS) /fo$@ $<
+
+HEADERS = httpint.h httpapi.h httpxml.h
+
+"$(INTDIR)\httppil.obj": httppil.c $(HEADERS)
+"$(INTDIR)\http.obj": http.c $(HEADERS)
+"$(INTDIR)\httpxml.obj": httpxml.c $(HEADERS)
+"$(INTDIR)\httphandler.obj": httphandler.c $(HEADERS)
+"$(INTDIR)\httppost.obj": httppost.c $(HEADERS)
+"$(INTDIR)\httpauth.obj": httpauth.c $(HEADERS)
+"$(INTDIR)\miniweb.obj": miniweb.c $(HEADERS)

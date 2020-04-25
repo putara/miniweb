@@ -152,10 +152,11 @@
 
 static wchar_t *mp_from_utf8(const char *s)
 {
+    wchar_t *ret;
     int count = MultiByteToWideChar(CP_UTF8, 0, s, -1, NULL, 0);
     if (count <= 0)
         return NULL;
-    wchar_t *ret = malloc(sizeof(wchar_t) * (count + 1));
+    ret = malloc(sizeof(wchar_t) * (count + 1));
     MultiByteToWideChar(CP_UTF8, 0, s, -1, ret, count);
     return ret;
 }
@@ -169,10 +170,11 @@ static int _cc_WCTU8(char *dstU8, const wchar_t *srcW, int bytesDst)
 
 static char *mp_to_utf8(const wchar_t *s)
 {
+    char *ret;
     int count = _cc_WCTU8(0, s, 0);
     if (count <= 0)
         return NULL;
-    char *ret = malloc(sizeof(char) * count);
+    ret = malloc(sizeof(char) * count);
     _cc_WCTU8(ret, s, count);
     return ret;
 }
@@ -231,17 +233,18 @@ static int mp_vfprintf(FILE *f, const char *format, va_list args)
 // the original argv. if success, caller needs to free with cc_free_argvutf8
 static char **cc_get_argvutf8(int argc_validation, char **argv_orig, int *out_success)
 {
-    *out_success = 0;
     int nArgs;
     LPWSTR *szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
+    char **argvu;
+    int i;
+    *out_success = 0;
     if (!szArglist || nArgs != argc_validation) {
         if (szArglist)
             LocalFree(szArglist);
         return argv_orig;
     }
 
-    char **argvu = malloc(sizeof(char*) * (nArgs + 1));
-    int i;
+    argvu = malloc(sizeof(char*) * (nArgs + 1));
     for (i = 0; i < nArgs; i++) {
         argvu[i] = mp_to_utf8(szArglist[i]);
         if (!argvu[i])
@@ -287,11 +290,12 @@ static int cc_fprintf(FILE *stream, const char *format, ...)
 
 static FILE *cc_fopen(const char *fname, const char *mode) {
     wchar_t *wfname, *wmode;
+    FILE *rv;
     if (!fname || !mode) return 0;
     wfname = mp_from_utf8(fname);
     wmode  = mp_from_utf8(mode);
 
-    FILE *rv = _wfopen(wfname, wmode);
+    rv = _wfopen(wfname, wmode);
 
     free(wmode);
     free(wfname);
@@ -300,10 +304,11 @@ static FILE *cc_fopen(const char *fname, const char *mode) {
 
 static int cc_open(const char *fname, int oflags) {
     wchar_t *wfname;
+    int rv;
     if (!fname) return -1;
     wfname = mp_from_utf8(fname);
 
-    int rv = _wopen(wfname, oflags);
+    rv = _wopen(wfname, oflags, 0);
 
     free(wfname);
     return rv;

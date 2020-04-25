@@ -3,7 +3,8 @@
 #include "httpxml.h"
 
 #ifdef WIN32
-#define snprintf _snprintf
+#define snprintf(s, n, format, ...) _snprintf_s(s, n, _TRUNCATE, format, __VA_ARGS__)
+#define vsnprintf(s, n, format, arg) _vsnprintf_s(s, n, _TRUNCATE, format, arg)
 #endif
 
 int mwWriteXmlHeader(char** pbuf, int* pbufsize, int ver, char* charset, char* xsl)

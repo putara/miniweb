@@ -23,10 +23,14 @@
 #include "7zDec/7zInc.h"
 #endif
 
+#ifdef WIN32
+#define vsnprintf(s, n, format, arg) _vsnprintf_s(s, n, _TRUNCATE, format, arg)
+#endif
+
 ////////////////////////////////////////////////////////////////////////////
 // global variables
 ////////////////////////////////////////////////////////////////////////////
-const char* status200[] = {
+const char* const status200[] = {
 	"OK",		/* 200 */
 	"Created",	/* 201 */
 	"Accepted", /* 202 */
@@ -36,7 +40,7 @@ const char* status200[] = {
 	"Partial Content", /* 206 */
 };
 
-const char* status300[] = {
+const char* const status300[] = {
 	"Multiple Choices", /* 300 */
 	"Moved Permanently", /* 301 */
 	"Found", /* 302 */
@@ -47,7 +51,7 @@ const char* status300[] = {
 	"Temporary Redirect", /* 307 */
 };
 
-const char* status400[] = {
+const char* const status400[] = {
 	"Bad Request", /* 400 */
 	"Unauthorized", /* 401 */
 	"", /* 402 */
@@ -65,7 +69,7 @@ const char* status400[] = {
 	"Request-URI Too Long", /* 414 */
 };
 
-const char* status500[] = {
+const char* const status500[] = {
 	"Internal Server Error", /* 500 */
 	"Not Implemented", /* 501 */
 	"Bad Gateway", /* 502 */
@@ -73,7 +77,7 @@ const char* status500[] = {
 	"Gateway Timeout", /* 504 */
 };
 
-const char* contentTypeTable[]={
+const char* const contentTypeTable[]={
 	"application/octet-stream",
 	"text/html",
 	"text/xml",
@@ -104,17 +108,17 @@ const char* contentTypeTable[]={
 	"image/svg+xml",
 };
 
-char* defaultPages[]={"index.htm","index.html","default.htm","main.xul"};
+const char* const defaultPages[]={"index.htm","index.html","default.htm","main.xul"};
 
-FILE *fpLog=NULL;
+FILE *fpLog;
 
 ////////////////////////////////////////////////////////////////////////////
 // API callsc
 ////////////////////////////////////////////////////////////////////////////
 
-const char *dayNames="Sun\0Mon\0Tue\0Wed\0Thu\0Fri\0Sat";
-const char *monthNames="Jan\0Feb\0Mar\0Apr\0May\0Jun\0Jul\0Aug\0Sep\0Oct\0Nov\0Dec";
-const char *httpDateTimeFormat="%s, %02d %s %d %02d:%02d:%02d GMT";
+const char* const dayNames="Sun\0Mon\0Tue\0Wed\0Thu\0Fri\0Sat";
+const char* const monthNames="Jan\0Feb\0Mar\0Apr\0May\0Jun\0Jul\0Aug\0Sep\0Oct\0Nov\0Dec";
+const char* const httpDateTimeFormat="%s, %02d %s %d %02d:%02d:%02d GMT";
 
 char* mwGetVarValue(HttpVariables* vars, const char *varname, const char *defval)
 {
@@ -258,7 +262,7 @@ int mwServerStart(HttpParam* hp)
 ////////////////////////////////////////////////////////////////////////////
 int mwServerShutdown(HttpParam* hp, mwShutdownCallback cb, unsigned int timeout_ms)
 {
-	int i;
+	unsigned int i;
 	if (hp->bKillingWebserver || hp->bKillWebserver || !hp->bWebserverRunning)
 		return -1;  // call at invalid state
 	hp->bKillingWebserver = TRUE;
@@ -1561,7 +1565,7 @@ int _mwListDirectory_internal(HttpSocket* phsSocket, char* dir, int isscript, in
 	return 0;
 }
 
-const char *dir_list_js = ""
+const char* const dir_list_js = ""
 "document.title = title; document.getElementById('title').innerHTML = title;\n"
 "var DEF_ORDER = 'N+';  // by name by default\n"
 "var DEF_DIR = {N: 1, S: -1, T: 1, M: -1};  // default dir for each column (date/size are reversed)\n"

@@ -39,7 +39,7 @@ int uhAsyncDataTest(UrlHandlerParam* param);
 int uhRTSP(UrlHandlerParam* param);
 int uhSerial(UrlHandlerParam* param);
 
-UrlHandler urlHandlerList[]={
+const UrlHandler urlHandlerList[]={
 	{"stats", uhStats, NULL},
 #ifdef ENABLE_SERIAL
 	{"serial", uhSerial, NULL},
@@ -67,7 +67,7 @@ UrlHandler urlHandlerList[]={
 };
 
 #ifndef DISABLE_BASIC_WWWAUTH
-AuthHandler authHandlerList[]={
+const AuthHandler authHandlerList[]={
 	{"stats", "user", "pass", "group=admin", ""},
 	{NULL}
 };
@@ -297,6 +297,8 @@ static int print_interfaces(const char *prefix, int port)
 
 int cc_main(int argc,char* argv[])
 {
+	const char *ifcarg = 0;
+
 	fprintf(stderr,"%s https://github.com/avih/miniweb (built on %s)\n"
 	               "Originally: (C)2005-2013 Written by Stanley Huang <stanleyhuangyc@gmail.com>\n\n",
 	               APP_NAME, __DATE__);
@@ -326,8 +328,6 @@ int cc_main(int argc,char* argv[])
 #else
 	httpParam.pfnFileUpload = DefaultWebFileUploadCallback;
 #endif
-
-	const char *ifcarg = 0;
 
 	//parsing command line arguments
 	{
