@@ -78,6 +78,8 @@
 #define FILEEXT_TS DEFDWORD('T', 'S', 0, 0)
 #define FILEEXT_M3U8 DEFDWORD('M', '3' - 32, 'U', '8' - 32)
 #define FILEEXT_SDP DEFDWORD('S', 'D', 'P', 0)
+#define FILEEXT_JSON DEFDWORD('J','S','O','N')
+#define FILEEXT_SVG DEFDWORD('S','V','G',0)
 
 // Settings for http server
 #define HTTP_EXPIRATION_TIME (120/*secs*/)

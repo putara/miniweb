@@ -100,6 +100,8 @@ const char* contentTypeTable[]={
 	"application/x-mpegURL",
 	"application/sdp",
 	"application/binhex",
+	"application/json",
+	"image/svg+xml",
 };
 
 char* defaultPages[]={"index.htm","index.html","default.htm","main.xul"};
@@ -2286,6 +2288,7 @@ int mwGetContentType(const char *pchExtname)
 		case FILEEXT_3GP:	return HTTPFILETYPE_3GP;
 		case FILEEXT_ASF:	return HTTPFILETYPE_ASF;
 		case FILEEXT_SDP:	return HTTPFILETYPE_SDP;
+		case FILEEXT_SVG:	return HTTPFILETYPE_SVG;
 		}
 	} else if (pchExtname[4]=='\0' || pchExtname[4]=='?') {
 		memcpy(&dwExt, pchExtname, sizeof(dwExt));
@@ -2294,6 +2297,7 @@ int mwGetContentType(const char *pchExtname)
 		case FILEEXT_HTML:	return HTTPFILETYPE_HTML;
 		case FILEEXT_MPEG:	return HTTPFILETYPE_MPEG;
 		case FILEEXT_M3U8:	return HTTPFILETYPE_M3U8;
+		case FILEEXT_JSON:	return HTTPFILETYPE_JSON;
 		}
 	}
 	return HTTPFILETYPE_OCTET;
